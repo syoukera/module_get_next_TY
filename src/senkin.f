@@ -397,6 +397,11 @@ C
      3                IPAR, ATOL, RTOL, TOLS, XMOL, KSYM)
       ENDIF
 C
+C     RETURN Z TO CFD VALUE
+C
+      T_CFD = Z(1)
+      Y_CFD(1:KK) = Z(2:KK+1) 
+C
 7000  FORMAT (/5X,'Restart calculation from previous solution.'/)
 7100  FORMAT ('  Pressure (atm)  =', 1PE12.4,/,
      1        '  Temperature (K) =', 1PE12.4,/,
