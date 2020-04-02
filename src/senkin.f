@@ -1,5 +1,6 @@
       SUBROUTINE SENKIN (LIN, LOUT, LINKCK, LSAVE, LIGN, LREST,
-     1                   LR, R, LI, I, LC, C)
+     1                   LR, R, LI, I, LC, C,
+     2                   T_CFD, P_CFD, Y_CFD, delta_t_CFD)
 C
 C*****precision > double
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
@@ -44,7 +45,7 @@ C     CHANGES FOR VERSION 1.8
 C     1.  Place reaction constant (D) at front of RPAR (remove A,B,E).
 C     2.  Call CKRDEX instead of CKA to perturb reaction constant.
 C
-      DIMENSION R(*), I(*)
+      DIMENSION R(*), I(*), Y_CFD(*)
       CHARACTER C(*)*(*)
 C
       LOGICAL LSENS
@@ -153,9 +154,10 @@ C
      1            LINKCK, LIN, LOUT, LSAVE, LIGN, LREST, LSENS,
      2            LIDAS, LRDAS, LSDAS, I(NIDAS), R(NRDAS), R(NSDAS),
      3            R(NRPAR), I(NIPAR), R(NZ), R(NZP), R(NRTOL),
-     4            R(NATOL), R(NXMOL), C(NKSYM), C(IPCCK))
+     4            R(NATOL), R(NXMOL), C(NKSYM), C(IPCCK),
+     5            T_CFD, P_CFD, Y_CFD, delta_t_CFD)
 C
-      STOP
+      RETURN
       END
 C
 C---------------------------------------------------------------
@@ -164,7 +166,8 @@ C
      1                  LENCCK, LINKCK, LIN, LOUT, LSAVE, LIGN, LREST,
      2                  LSENS, LIDAS, LRDAS, LSDAS, IDWORK, DWORK,
      3                  SDWORK, RPAR, IPAR, Z, ZP, RTOL, ATOL, XMOL,
-     5                  KSYM, CCKWRK)
+     5                  KSYM, CCKWRK, 
+     6                  T_CFD, P_CFD, Y_CFD, delta_t_CFD)
 C
 C*****precision > double
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
@@ -174,7 +177,7 @@ C      IMPLICIT REAL (A-H, O-Z), INTEGER (I-N)
 C*****END precision > single
 C
       DIMENSION Z(*), ZP(*), XMOL(*), DWORK(*), IDWORK(*), SDWORK(*),
-     1          RTOL(*), ATOL(*), RPAR(*), IPAR(*), TOLS(4)
+     1          RTOL(*), ATOL(*), RPAR(*), IPAR(*), TOLS(4), Y_CFD(*)
       CHARACTER*(*) CCKWRK(*), KSYM(*)
 C
       EXTERNAL RCONP, RCONV, RCONT, RVOLT, RTEMP
@@ -398,7 +401,7 @@ C
 7113  FORMAT (/5X,'Volume is a function of time.'/)
 7114  FORMAT (/5X,'Temperature is held constant.'/)
 7115  FORMAT (/5X,'Temperature is a function of time.'/)
-      STOP
+      RETURN
       END
 C
 C----------------------------------------------------------------------
