@@ -6,7 +6,7 @@ SENKIN内部のモジュールを改変して作成．
 1. dataフォルダにCHEMKINインタープリタで生成されたcklinkを配置
 2. ソースコードをmain.fと合わせてコンパイル．get_next_TYという実行ファイルが生成される
 ```bash
-bash compile.sh
+bash script/compile.sh
 ```
 3. 計算を実行
 ```bash
