@@ -12,3 +12,6 @@ bash script/compile.sh
 ```bash
 ./get_next_TY
 ```
+
+## 留意点
+- SENKINにおけるケース１：圧力一定の条件で計算
