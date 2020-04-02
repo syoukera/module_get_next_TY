@@ -1,16 +1,27 @@
 program main
       integer,parameter :: num_species = 53
       
-      real(8) :: T = 1000
-      real(8) :: P = 1.0d5
-      real(8) Y(num_species) 
-      real(8) :: delta_t = 1.0d-12
+      real(8) :: T_CFD = 1000
+      real(8) :: P_CFD = 1.0d5
+      real(8) Y_CFD(num_species) 
+      real(8) :: delta_t_CFD = 1.0d-12
 
-      call DRIVER(T, P, Y, delta_t)
+      ! Assurme Y has a same secuence as species in ckout
+      data Y_CFD /0.00E+00,0.00E+00,0.00E+00,1.75E-01,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
+                  0.00E+00,0.00E+00,0.00E+00,0.00E+00,5.14E-02,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
+                  0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
+                  0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
+                  0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
+                  0.00E+00,0.00E+00,7.74E-01,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00/
+
+      call DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD)
+
+      write(*,*) T_CFD, Y_CFD
+      write(*,*) 'aaa'
 
 end program main
 
-SUBROUTINE DRIVER(T, P, Y, delta_t)
+SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD)
 ! C
 ! C*****DOUBLE PRECISION
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
@@ -19,10 +30,10 @@ SUBROUTINE DRIVER(T, P, Y, delta_t)
 ! C      IMPLICIT REAL (A-H, O-Z), INTEGER (I-N)
 ! C*****END SINGLE PRECISION
       PARAMETER ( LENIWK = 1000000, LENRWK = 20000000, LENCWK = 10000, LENSYM = 16)
-      DIMENSION IWORK (LENIWK), RWORK (LENRWK), Y(*)
+      DIMENSION IWORK (LENIWK), RWORK (LENRWK), Y_CFD(*)
       LOGICAL LEXIST
       CHARACTER CWORK(LENCWK)*(LENSYM)
-      DATA LIN/5/, LOUT/6/, LINKCK/25/, LSAVE/7/, LIGN/9/, LREST/10/
+      DATA LIN/5/, LOUT/11/, LINKCK/25/, LSAVE/7/, LIGN/9/, LREST/10/
 ! C
 ! C     LIN    = Unit number for Keyword input
 ! C     LOUT   = Unit number for text output to terminal
@@ -63,10 +74,11 @@ SUBROUTINE DRIVER(T, P, Y, delta_t)
 ! C
 ! C     PASS CONTROL TO SENKIN
 ! C
-      CALL SENKIN (LIN, LOUT, LINKCK, LSAVE, LIGN, LREST, LENRWK, RWORK, LENIWK, IWORK, LENCWK, CWORK,
-      T, P, Y, delta_t)
+      CALL SENKIN (LIN, LOUT, LINKCK, LSAVE, LIGN, LREST,      &
+                  LENRWK, RWORK, LENIWK, IWORK, LENCWK, CWORK, & 
+                  T_CFD, P_CFD, Y_CFD, delta_t_CFD)
 ! C
-      STOP
+      RETURN
       END
 ! C
       SUBROUTINE TEMPT (TIME, TEMP)
