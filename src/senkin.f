@@ -292,11 +292,11 @@ C
 C
 C        READ PARAMETERS FROM CFD VALUE
 C
-      DELT =  delta_t_CFD
+      DELT  = delta_t_CFD
+      TSTOP = delta_t_CFD
 C     Pa to Dyne/cm**2
-      P = P_CFD * 10
+      P =         P_CFD * 10
       TOLS(1:4) = TOLS_CFD(1:4)
-      TSTOP = 1.0
 C
 C      ORIGINAL JOB
 C
