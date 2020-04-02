@@ -1,6 +1,6 @@
       SUBROUTINE SENKIN (LIN, LOUT, LINKCK, LSAVE, LIGN, LREST,
      1                   LR, R, LI, I, LC, C,
-     2                   T_CFD, P_CFD, Y_CFD, delta_t_CFD)
+     2                   T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD)
 C
 C*****precision > double
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
@@ -45,7 +45,7 @@ C     CHANGES FOR VERSION 1.8
 C     1.  Place reaction constant (D) at front of RPAR (remove A,B,E).
 C     2.  Call CKRDEX instead of CKA to perturb reaction constant.
 C
-      DIMENSION R(*), I(*), Y_CFD(*)
+      DIMENSION R(*), I(*), Y_CFD(*), TOLS_CFD(*)
       CHARACTER C(*)*(*)
 C
       LOGICAL LSENS
@@ -155,7 +155,7 @@ C
      2            LIDAS, LRDAS, LSDAS, I(NIDAS), R(NRDAS), R(NSDAS),
      3            R(NRPAR), I(NIPAR), R(NZ), R(NZP), R(NRTOL),
      4            R(NATOL), R(NXMOL), C(NKSYM), C(IPCCK),
-     5            T_CFD, P_CFD, Y_CFD, delta_t_CFD)
+     5            T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD)
 C
       RETURN
       END
@@ -167,7 +167,7 @@ C
      2                  LSENS, LIDAS, LRDAS, LSDAS, IDWORK, DWORK,
      3                  SDWORK, RPAR, IPAR, Z, ZP, RTOL, ATOL, XMOL,
      5                  KSYM, CCKWRK, 
-     6                  T_CFD, P_CFD, Y_CFD, delta_t_CFD)
+     6                  T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD)
 C
 C*****precision > double
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
@@ -177,7 +177,8 @@ C      IMPLICIT REAL (A-H, O-Z), INTEGER (I-N)
 C*****END precision > single
 C
       DIMENSION Z(*), ZP(*), XMOL(*), DWORK(*), IDWORK(*), SDWORK(*),
-     1          RTOL(*), ATOL(*), RPAR(*), IPAR(*), TOLS(4), Y_CFD(*)
+     1          RTOL(*), ATOL(*), RPAR(*), IPAR(*), TOLS(4), Y_CFD(*), 
+     2          TOLS_CFD(*)
       CHARACTER*(*) CCKWRK(*), KSYM(*)
 C
       EXTERNAL RCONP, RCONV, RCONT, RVOLT, RTEMP
@@ -220,9 +221,9 @@ C
 C
 C        READ KEYWORD INPUT
 C
-      CALL REDKEY (DELT, KK, KSYM, LIN, LOUT, PA,
-     1             RESTRT, T, TLIM, TOLS, TRES, TSTOP, XMOL)
-      P = PA * PATM
+!       CALL REDKEY (DELT, KK, KSYM, LIN, LOUT, PA,
+!      1             RESTRT, T, TLIM, TOLS, TRES, TSTOP, XMOL)
+!       P = PA * PATM
 C
 C       PHYSICAL INITIAL CONDITIONS
 C
@@ -289,13 +290,21 @@ C
 C
       ELSE
 C
+C        READ PARAMETERS FROM CFD VALUE
+C
+      DELT =  delta_t_CFD
+C     Pa to Dyne/cm**2
+      P = P_CFD * 10
+      TOLS(1:4) = TOLS_CFD(1:4)
+      TSTOP = 1.0
+C
 C      ORIGINAL JOB
 C
          TIM = 0.E+0
          IF (ICASE .LE. 3) THEN
-            Z(1) = T
-            CALL CKXTY  (XMOL, IPAR(IPICK), RPAR(IPRCK), Z(2))
-            CALL CKRHOY (P, T, Z(2), IPAR(IPICK), RPAR(IPRCK), RHO)
+            Z(1) = T_CFD
+            Z(2:KK+1) = Y_CFD(1:KK)
+            CALL CKRHOY (P, Z(1), Z(2), IPAR(IPICK), RPAR(IPRCK), RHO)
             IF (ICASE .EQ. 3) THEN
                CALL VOLT (TIM, VZERO, DVDT)
                TOTMAS = RHO * VZERO

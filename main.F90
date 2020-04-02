@@ -1,11 +1,12 @@
 program main
       integer,parameter :: num_species = 53
       
-      real(8) :: T_CFD = 1000
-      real(8) :: P_CFD = 1.0d5
-      real(8) Y_CFD(num_species) 
-      real(8) :: delta_t_CFD = 1.0d-12
-
+      real(8) :: T_CFD = 1.0d3          ! K
+      real(8) :: P_CFD = 101325         ! Pa
+      real(8) Y_CFD(num_species)        ! Mass fractions
+      real(8) :: delta_t_CFD = 1.0d-12  ! s
+      real(8) :: TOLS_CFD(4)            ! Tolerances
+      
       ! Assurme Y has a same secuence as species in ckout
       data Y_CFD /0.00E+00,0.00E+00,0.00E+00,1.75E-01,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
                   0.00E+00,0.00E+00,0.00E+00,0.00E+00,5.14E-02,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
@@ -14,14 +15,15 @@ program main
                   0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
                   0.00E+00,0.00E+00,7.74E-01,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00/
 
-      call DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD)
+      data TOLS_CFD /1.E-8, 1.E-20, 1.E-5, 1.E-5/
+
+      call DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD)
 
       write(*,*) T_CFD, Y_CFD
-      write(*,*) 'aaa'
 
 end program main
 
-SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD)
+SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD)
 ! C
 ! C*****DOUBLE PRECISION
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
@@ -30,7 +32,7 @@ SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD)
 ! C      IMPLICIT REAL (A-H, O-Z), INTEGER (I-N)
 ! C*****END SINGLE PRECISION
       PARAMETER ( LENIWK = 1000000, LENRWK = 20000000, LENCWK = 10000, LENSYM = 16)
-      DIMENSION IWORK (LENIWK), RWORK (LENRWK), Y_CFD(*)
+      DIMENSION IWORK (LENIWK), RWORK (LENRWK), Y_CFD(*), TOLS_CFD(*)
       LOGICAL LEXIST
       CHARACTER CWORK(LENCWK)*(LENSYM)
       DATA LIN/5/, LOUT/11/, LINKCK/25/, LSAVE/7/, LIGN/9/, LREST/10/
@@ -76,7 +78,7 @@ SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD)
 ! C
       CALL SENKIN (LIN, LOUT, LINKCK, LSAVE, LIGN, LREST,      &
                   LENRWK, RWORK, LENIWK, IWORK, LENCWK, CWORK, & 
-                  T_CFD, P_CFD, Y_CFD, delta_t_CFD)
+                  T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD)
 ! C
       RETURN
       END
