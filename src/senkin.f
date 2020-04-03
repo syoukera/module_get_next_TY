@@ -1,7 +1,7 @@
       SUBROUTINE SENKIN (LIN, LOUT, LINKCK, LSAVE, LIGN, LREST,
      1                   LR, R, LI, I, LC, C,
      2                   T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD,
-     3                   MADE_OUTPUT)
+     3                   MAKE_OUTPUT)
 C
 C*****precision > double
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
@@ -49,7 +49,7 @@ C
       DIMENSION R(*), I(*), Y_CFD(*), TOLS_CFD(*)
       CHARACTER C(*)*(*)
 C
-      LOGICAL LSENS, MADE_OUTPUT
+      LOGICAL LSENS, MAKE_OUTPUT
 C
       COMMON /POINT/ IPICK, IPRCK, IPWT, IPWDOT, IPU, IPRD
 C
@@ -157,7 +157,7 @@ C
      3            R(NRPAR), I(NIPAR), R(NZ), R(NZP), R(NRTOL),
      4            R(NATOL), R(NXMOL), C(NKSYM), C(IPCCK),
      5            T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD,
-     6            MADE_OUTPUT)
+     6            MAKE_OUTPUT)
 C
       RETURN
       END
@@ -170,7 +170,7 @@ C
      3                  SDWORK, RPAR, IPAR, Z, ZP, RTOL, ATOL, XMOL,
      5                  KSYM, CCKWRK, 
      6                  T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD,
-     7                  MADE_OUTPUT)
+     7                  MAKE_OUTPUT)
 C
 C*****precision > double
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
@@ -186,7 +186,7 @@ C
 C
       EXTERNAL RCONP, RCONV, RCONT, RVOLT, RTEMP
 C
-      LOGICAL LSENS, RESTRT, IERR, MADE_OUTPUT
+      LOGICAL LSENS, RESTRT, IERR, MAKE_OUTPUT
 C
 C        PHYSICAL VARIABLES IN COMMON
 C
@@ -377,7 +377,7 @@ C
          CALL SENS13 (RCONP, ICASE, NSYS, KK, II, DELT, TSTOP, TIM,
      1                PATM, TLIM, LOUT, LSAVE, LIGN, LSENS, LIDAS,
      2                LRDAS, LSDAS, Z, ZP, DWORK, IDWORK, SDWORK, RPAR,
-     3                IPAR, ATOL, RTOL, TOLS, XMOL, KSYM, MADE_OUTPUT)
+     3                IPAR, ATOL, RTOL, TOLS, XMOL, KSYM, MAKE_OUTPUT)
       ELSEIF (ICASE .EQ. 2) THEN
          CALL SENS13 (RCONV, ICASE, NSYS, KK, II, DELT, TSTOP, TIM,
      1                PATM, TLIM, LOUT, LSAVE, LIGN, LSENS, LIDAS,
@@ -427,7 +427,7 @@ C
      1                   PATM, TLIM, LOUT, LSAVE, LIGN, LSENS, LIW,
      2                   LRW, LSW, Z, ZP, ELWRK, IELWRK, SWORK, RPAR,
      3                   IPAR, ATOL, RTOL, TOLS, XMOL, KSYM, 
-     4                   MADE_OUTPUT)
+     4                   MAKE_OUTPUT)
 C
 C  This module directs the integration for cases 1-3, where temperature
 C  is not known and the energy equation is included.
@@ -445,7 +445,7 @@ C
 C
       EXTERNAL RES, DRES
 C
-      LOGICAL LSENS, MADE_OUTPUT
+      LOGICAL LSENS, MAKE_OUTPUT
       CHARACTER KSYM(*)*(*)
 C
       COMMON /RES1/ P

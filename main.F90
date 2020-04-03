@@ -7,7 +7,7 @@ program main
       real(8) :: delta_t_CFD = 1.0d-12  ! s
       real(8) :: TOLS_CFD(4)            ! Tolerances
 
-      logical :: MADE_OUTPUT = .false.
+      logical :: MAKE_OUTPUT = .false.
       
       ! Assurme Y has a same secuence as species in ckout
       data Y_CFD /0.00E+00,0.00E+00,0.00E+00,1.75E-01,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
@@ -25,7 +25,7 @@ program main
 
 end program main
 
-SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD, MADE_OUTPUT)
+SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD, MAKE_OUTPUT)
 ! C
 ! C*****DOUBLE PRECISION
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
@@ -35,7 +35,7 @@ SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD, MADE_OUTPUT)
 ! C*****END SINGLE PRECISION
       PARAMETER ( LENIWK = 1000000, LENRWK = 20000000, LENCWK = 10000, LENSYM = 16)
       DIMENSION IWORK (LENIWK), RWORK (LENRWK), Y_CFD(*), TOLS_CFD(*)
-      LOGICAL LEXIST, MADE_OUTPUT
+      LOGICAL LEXIST, MAKE_OUTPUT
       CHARACTER CWORK(LENCWK)*(LENSYM)
       DATA LIN/5/, LOUT/11/, LINKCK/25/, LSAVE/7/, LIGN/9/, LREST/10/
 ! C
@@ -81,7 +81,7 @@ SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD, MADE_OUTPUT)
       CALL SENKIN (LIN, LOUT, LINKCK, LSAVE, LIGN, LREST,      &
                   LENRWK, RWORK, LENIWK, IWORK, LENCWK, CWORK, & 
                   T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD,  &
-                  MADE_OUTPUT)
+                  MAKE_OUTPUT)
 ! C
       RETURN
       END
