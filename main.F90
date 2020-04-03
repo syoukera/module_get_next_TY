@@ -19,7 +19,7 @@ program main
 
       data TOLS_CFD /1.E-8, 1.E-20, 1.E-5, 1.E-5/
 
-      call DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD)
+      call DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD, MAKE_OUTPUT)
 
       write(*,*) T_CFD, Y_CFD
 
@@ -66,13 +66,15 @@ SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD, MAKE_OUTPUT)
 ! C
 ! C*****unix
       OPEN (LINKCK, FORM='UNFORMATTED', FILE='data/cklink')
-      OPEN (LSAVE, FORM='UNFORMATTED', FILE ='output/save')
-      OPEN (LOUT, FORM='FORMATTED', FILE='output/terminalout')
-      OPEN (LIGN, FORM='FORMATTED', FILE = 'output/skout')
-      OPEN (LIN, FORM='FORMATTED', FILE='input/inp')
-      INQUIRE (FILE='output/restart', EXIST=LEXIST)
-      IF (LEXIST) THEN 
-        OPEN (LREST, FORM='UNFORMATTED', FILE='output/restart')
+      IF (MAKE_OUTPUT) THEN
+            OPEN (LSAVE, FORM='UNFORMATTED', FILE ='output/save')
+            OPEN (LOUT, FORM='FORMATTED', FILE='output/terminalout')
+            OPEN (LIGN, FORM='FORMATTED', FILE = 'output/skout')
+            OPEN (LIN, FORM='FORMATTED', FILE='input/inp')
+            INQUIRE (FILE='output/restart', EXIST=LEXIST)
+            IF (LEXIST) THEN 
+                  OPEN (LREST, FORM='UNFORMATTED', FILE='output/restart')
+            ENDIF
       ENDIF
 ! C*****END unix
 ! C

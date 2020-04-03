@@ -53,8 +53,10 @@ C
 C
       COMMON /POINT/ IPICK, IPRCK, IPWT, IPWDOT, IPU, IPRD
 C
-      WRITE (LOUT, 15)
-      WRITE (LIGN, 15)
+      IF (MAKE_OUTPUT) THEN
+            WRITE (LOUT, 15)
+            WRITE (LIGN, 15)
+      ENDIF
    15 FORMAT(
      1/' SENKIN:  Sensitity Analysis',
      2/'          Author: Andy Lutz',
@@ -78,7 +80,12 @@ C
 C
 C        READ SENSITIVITY AND PROBLEM CHOICE KEYWORDS
 C
-      CALL REDSEN (ICASE, LIGN, LIN, LOUT, LSENS)
+C      CALL REDSEN (ICASE, LIGN, LIN, LOUT, LSENS)
+C
+C        SET CONSTANT PRESSURE AND NO SENSITIVITY ANALYSIS
+C
+      ICASE = 1
+      LSENS = .FALSE.
 C
 C         COMPUTE DASAC WORK SPACE
 C
@@ -137,16 +144,18 @@ C
 C
 C          CHECK FOR SUFFICIENT SPACE
 C
-      WRITE (LOUT, 7020) LI, LITOT, LR, LRTOT, LC, LCTOT
- 7020 FORMAT (/, '                Working Space Requirements',
-     1        /, '                 Provided        Required ',
-     2        /, ' Integer  ', 2I15,
-     3        /, ' Real     ', 2I15,
-     4        /, ' Character', 2I15, /)
+      IF (MAKE_OUTPUT) THEN
+         WRITE (LOUT, 7020) LI, LITOT, LR, LRTOT, LC, LCTOT
+ 7020    FORMAT (/, '                Working Space Requirements',
+     1           /, '                 Provided        Required ',
+     2           /, ' Integer  ', 2I15,
+     3           /, ' Real     ', 2I15,
+     4           /, ' Character', 2I15, /)
 C
-      IF (LRTOT.GT.LR .OR. LITOT.GT.LI .OR. LCTOT.GT.LC) THEN
-         WRITE (LOUT, *) '  Stop, not enough work space provided.'
-         STOP
+         IF (LRTOT.GT.LR .OR. LITOT.GT.LI .OR. LCTOT.GT.LC) THEN
+            WRITE (LOUT, *) '  Stop, not enough work space provided.'
+            STOP
+         ENDIF
       ENDIF
 C
 C          GO TO MAIN LEVEL
@@ -245,12 +254,14 @@ C
          READ (LREST) IDUM
          READ (LREST) IDUM, KKR
 C
-         IF (KKR .NE. KK)
-     1      WRITE (LOUT, '(/3X, A, /9X, A, /9X, A, I6, /9X, A, I6)')
+         IF (MAKE_OUTPUT) THEN
+            IF (KKR .NE. KK)
+     1          WRITE (LOUT, '(/3X, A, /9X, A, /9X, A, I6, /9X, A, I6)')
      2      'Stop! Number of species in restart file does not match',
      3      'the number from the CHEMKIN link file.',
      4      'No. species in restart file = ', KKR,
      5      'No. species in linking file = ', KK
+         ENDIF
 C
          READ (LREST) TFIL, P, T, (XMOL(K), K = 1, KK)
          IF (TRES .LT. 0.) THEN
@@ -287,7 +298,9 @@ C
             CALL CKRHOY (P, T, Z, IPAR(IPICK), RPAR(IPRCK), RHO)
 C
          ELSE
-            WRITE (LOUT, '(/1X,A,/)') ' Stop, ICASE not found in BEGIN.'
+            IF (MAKE_OUTPUT) THEN
+               WRITE (LOUT, '(/1X,A,/)') ' Stop, ICASE not found.'
+            ENDIF
             STOP
          ENDIF
 C
@@ -323,7 +336,9 @@ C
             CALL CKRHOY (P, T, Z, IPAR(IPICK), RPAR(IPRCK), RHO)
 C
          ELSE
-            WRITE (LOUT, '(/1X,A,/)') ' Stop, ICASE not found in BEGIN.'
+            iF (MAKE_OUTPUT) THEN
+               WRITE (LOUT, '(/1X,A,/)') ' Stop, ICASE not found.'
+            ENDIF
             STOP
          ENDIF
       ENDIF
@@ -335,41 +350,43 @@ C
 C
 C       PRINT INITIAL CONDITIONS
 C
-      IF (RESTRT) THEN
-         WRITE (LOUT, 7000)
-         WRITE (LIGN, 7000)
-      ENDIF
+      IF (MAKE_OUTPUT) THEN
+         IF (RESTRT) THEN
+            WRITE (LOUT, 7000)
+            WRITE (LIGN, 7000)
+         ENDIF
 C
-      IF (ICASE .EQ. 1) THEN
-         WRITE (LOUT, 7111)
-         WRITE (LIGN, 7111)
-      ELSEIF (ICASE .EQ. 2) THEN
-         WRITE (LOUT, 7112)
-         WRITE (LIGN, 7112)
-      ELSEIF (ICASE .EQ. 3) THEN
-         WRITE (LOUT, 7113)
-         WRITE (LIGN, 7113)
-      ELSEIF (ICASE .EQ. 4) THEN
-         WRITE (LOUT, 7114)
-         WRITE (LIGN, 7114)
-      ELSEIF (ICASE .EQ. 5) THEN
-         WRITE (LOUT, 7115)
-         WRITE (LIGN, 7115)
+         IF (ICASE .EQ. 1) THEN
+            WRITE (LOUT, 7111)
+            WRITE (LIGN, 7111)
+         ELSEIF (ICASE .EQ. 2) THEN
+            WRITE (LOUT, 7112)
+            WRITE (LIGN, 7112)
+         ELSEIF (ICASE .EQ. 3) THEN
+            WRITE (LOUT, 7113)
+            WRITE (LIGN, 7113)
+         ELSEIF (ICASE .EQ. 4) THEN
+            WRITE (LOUT, 7114)
+            WRITE (LIGN, 7114)
+         ELSEIF (ICASE .EQ. 5) THEN
+            WRITE (LOUT, 7115)
+            WRITE (LIGN, 7115)
+         ENDIF
+         WRITE (LOUT, 7103)
+         WRITE (LIGN, 7103)
+         WRITE (LOUT, 7100) PA, T, RHO
+         WRITE (LIGN, 7100) PA, T, RHO
+         IF (ICASE .EQ. 3) THEN
+            WRITE (LOUT, 7104) TOTMAS
+            WRITE (LIGN, 7104) TOTMAS
+         ENDIF
+         WRITE (LIGN, 7101)
+         WRITE (LOUT, 7101)
+         DO 130 K = 1, KK
+            WRITE (LIGN, 7102) KSYM(K), XMOL(K)
+            WRITE (LOUT, 7102) KSYM(K), XMOL(K)
+130      CONTINUE
       ENDIF
-      WRITE (LOUT, 7103)
-      WRITE (LIGN, 7103)
-      WRITE (LOUT, 7100) PA, T, RHO
-      WRITE (LIGN, 7100) PA, T, RHO
-      IF (ICASE .EQ. 3) THEN
-         WRITE (LOUT, 7104) TOTMAS
-         WRITE (LIGN, 7104) TOTMAS
-      ENDIF
-      WRITE (LIGN, 7101)
-      WRITE (LOUT, 7101)
-      DO 130 K = 1, KK
-         WRITE (LIGN, 7102) KSYM(K), XMOL(K)
-         WRITE (LOUT, 7102) KSYM(K), XMOL(K)
-130   CONTINUE
 C
 C        INTEGRATION ROUTINE TO RUN PROBLEM
 C
@@ -454,8 +471,10 @@ C
 C
 C       SET OUTPUT FILE FOR USER COMFORMATION
 C
-      LDTS = 11
-      OPEN (LDTS, FORM='FORMATTED', FILE = 'output/skout_datasheet')
+      IF (MAKE_OUTPUT) THEN
+         LDTS = 11
+         OPEN (LDTS, FORM='FORMATTED', FILE = 'output/skout_datasheet')
+      ENDIF
 C
 C       SET PARAMETERS FOR DASAC
 C
@@ -498,18 +517,20 @@ C*****END precision > double
 C
 C       PRINT    Initial condition.
 C
-      WRITE (LSAVE) LSENS
-      WRITE (LSAVE) NSYS, KK, II
-      WRITE (LSAVE) TIM, P, (Z(I,1), I = 1, NSYS)
-      IF (LSENS) WRITE (LSAVE) (( Z(I,J), I=1,NSYS), J = 2, II+1)
-      WRITE (LOUT, '(//A/)') '  Time Integration:'
-      WRITE (LIGN, '(//A/)') '  Time Integration:'
-      CALL TEXT13 (IPAR, KK, KSYM, LIGN, LOUT,
-     1             P, PATM, RPAR, TIM, XMOL, Z)
-      WRITE (LDTS, 7720)
-      WRITE (LDTS, *) (KSYM(I), I = 1, KK)
-      CALL TEXT13DTS (IPAR, KK, KSYM, LDTS,
-     1             P, PATM, RPAR, TIM, XMOL, Z)
+      IF (MAKE_OUTPUT) THEN
+         WRITE (LSAVE) LSENS
+         WRITE (LSAVE) NSYS, KK, II
+         WRITE (LSAVE) TIM, P, (Z(I,1), I = 1, NSYS)
+         IF (LSENS) WRITE (LSAVE) (( Z(I,J), I=1,NSYS), J = 2, II+1)
+         WRITE (LOUT, '(//A/)') '  Time Integration:'
+         WRITE (LIGN, '(//A/)') '  Time Integration:'
+         CALL TEXT13 (IPAR, KK, KSYM, LIGN, LOUT,
+     1                P, PATM, RPAR, TIM, XMOL, Z)
+         WRITE (LDTS, 7720)
+         WRITE (LDTS, *) (KSYM(I), I = 1, KK)
+         CALL TEXT13DTS (IPAR, KK, KSYM, LDTS,
+     1                P, PATM, RPAR, TIM, XMOL, Z)
+      ENDIF
  7720 FORMAT(/,' t(sec)     P(atm)     T(K)    ', $)
 C
 C       A variable used for sensitivity analysis. Z(ls,J) --> ls = 1: temperature, ls = 2...NSYS: species
@@ -546,15 +567,19 @@ C*****precision > double
 C*****END precision > double
 C
       IF (IDID .LT. 0) THEN
-         WRITE (LOUT, '(1X,A,I3)') 'IDID =', IDID
+         IF (MAKE_OUTPUT) THEN
+            WRITE (LOUT, '(1X,A,I3)') 'IDID =', IDID
+         ENDIF
          STOP
       ENDIF
 C
 C           PRINT TO PLOT FILE
 C
-      WRITE (LSAVE) TIM, P, (Z(I,1), I = 1, NSYS)
-      IF (LSENS) WRITE (LSAVE) ((Z(I,J),I = 1,NSYS), J = 2,II+1)
-      NOSAV = NOSAV + 1
+      IF (MAKE_OUTPUT) THEN
+         WRITE (LSAVE) TIM, P, (Z(I,1), I = 1, NSYS)
+         IF (LSENS) WRITE (LSAVE) ((Z(I,J),I = 1,NSYS), J = 2,II+1)
+      ENDIF
+         NOSAV = NOSAV + 1
 C
 C         CHECK FOR THERMAL RUNAWAY
 C
@@ -568,18 +593,22 @@ C
 C           PRINT OUT SOLUTION
 C
       IF (TIM .GE. TPRINT) THEN
-         CALL TEXT13 (IPAR, KK, KSYM, LIGN, LOUT,
-     1                P, PATM, RPAR, TIM, XMOL, Z)
-         CALL TEXT13DTS (IPAR, KK, KSYM, LDTS,
-     1                P, PATM, RPAR, TIM, XMOL, Z)
+         IF (MAKE_OUTPUT) THEN
+            CALL TEXT13 (IPAR, KK, KSYM, LIGN, LOUT,
+     1                   P, PATM, RPAR, TIM, XMOL, Z)
+            CALL TEXT13DTS (IPAR, KK, KSYM, LDTS,
+     1                   P, PATM, RPAR, TIM, XMOL, Z)
+         ENDIF
          TLASTP = TIM
          TPRINT = TPRINT + DTOUT
 C
 C       PRINT    Sensitivity coefficient.
 C
          IF (LSENS) THEN
-            WRITE (LIGN, '(A)') ' Sensitivity coefficient'
-            WRITE (LIGN, '(I4, 1PE12.4)') (J-1, Z(ls,J), J = 2, II+1)
+            IF (MAKE_OUTPUT) THEN
+               WRITE (LIGN, '(A)') ' Sensitivity coefficient'
+               WRITE (LIGN, '(I4, 1PE12.4)') (J-1, Z(ls,J), J = 2, II+1)
+            ENDIF
          ENDIF
       ENDIF
 C
@@ -604,17 +633,21 @@ C
 C       PRINT    Sensitivity coefficient.
 C
          IF (LSENS) THEN
-            WRITE (LIGN, '(A)') ' Sensitivity coefficient'
-            WRITE (LIGN, '(I4, 1PE12.4)') (J-1, Z(ls,J), J = 2, II+1)
+            IF (MAKE_OUTPUT) THEN
+               WRITE (LIGN, '(A)') ' Sensitivity coefficient'
+               WRITE (LIGN, '(I4, 1PE12.4)') (J-1, Z(ls,J), J = 2, II+1)
+            ENDIF
          ENDIF
       ENDIF
 C
-      WRITE (LIGN, 7040) TIGN
-      WRITE (LIGN, 7045) TLIM
-      WRITE (LOUT, 7040) TIGN
-      WRITE (LOUT, 7045) TLIM
-      WRITE (LIGN, 7050) NOSAV
-      WRITE (LOUT, 7050) NOSAV
+      IF (MAKE_OUTPUT) THEN
+         WRITE (LIGN, 7040) TIGN
+         WRITE (LIGN, 7045) TLIM
+         WRITE (LOUT, 7040) TIGN
+         WRITE (LOUT, 7045) TLIM
+         WRITE (LIGN, 7050) NOSAV
+         WRITE (LOUT, 7050) NOSAV
+      ENDIF
 C
 C         FORMATS
 C
