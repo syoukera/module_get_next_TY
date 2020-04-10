@@ -1,23 +1,23 @@
 program main
       integer,parameter :: num_species = 53
       
-      real(8) :: T_CFD = 1.0d3          ! K
-      real(8) :: P_CFD = 101325         ! Pa
+      real(8) :: T_CFD = 1000d0         ! K
+      real(8) :: P_CFD = 1.01325d5*40   ! Pa
       real(8) Y_CFD(num_species)        ! Mass fractions
-      real(8) :: delta_t_CFD = 1.0d-12  ! s
+      real(8) :: delta_t_CFD = 1.0d-12   ! s
       real(8) :: TOLS_CFD(4)            ! Tolerances
 
       logical :: MAKE_OUTPUT = .false.
       
       ! Assurme Y has a same secuence as species in ckout
-      data Y_CFD /0.00E+00,0.00E+00,0.00E+00,1.75E-01,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
-                  0.00E+00,0.00E+00,0.00E+00,0.00E+00,5.14E-02,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
-                  0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
-                  0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
-                  0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00, &
-                  0.00E+00,0.00E+00,7.74E-01,0.00E+00,0.00E+00,0.00E+00,0.00E+00,0.00E+00/
+      data Y_CFD /0.00d+00,0.00d+00,0.00d+00,2.20d-01,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00, &
+                  0.00d+00,0.00d+00,0.00d+00,0.00d+00,5.51d-02,0.00d+00,0.00d+00,0.00d+00,0.00d+00, &
+                  0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00, &
+                  0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00, &
+                  0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00, &
+                  0.00d+00,0.00d+00,7.24d-01,0.00d+00,0.00d+00,0.00d+00,0.00d+00,0.00d+00/
 
-      data TOLS_CFD /1.E-8, 1.E-20, 1.E-5, 1.E-5/
+      data TOLS_CFD /1.d-8, 1.d-20, 1.d-5, 1.d-5/
 
       call DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD, MAKE_OUTPUT)
 
@@ -70,7 +70,7 @@ SUBROUTINE DRIVER(T_CFD, P_CFD, Y_CFD, delta_t_CFD, TOLS_CFD, MAKE_OUTPUT)
             OPEN (LSAVE, FORM='UNFORMATTED', FILE ='output/save')
             OPEN (LOUT, FORM='FORMATTED', FILE='output/terminalout')
             OPEN (LIGN, FORM='FORMATTED', FILE = 'output/skout')
-            OPEN (LIN, FORM='FORMATTED', FILE='input/inp')
+            ! OPEN (LIN, FORM='FORMATTED', FILE='input/inp')
             INQUIRE (FILE='output/restart', EXIST=LEXIST)
             IF (LEXIST) THEN 
                   OPEN (LREST, FORM='UNFORMATTED', FILE='output/restart')
