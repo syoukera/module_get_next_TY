@@ -1,5 +1,5 @@
 # module_get_next_TY
-delta_t秒後の温度Tと化学種k質量分率Y(k=1...KK)を計算するためのモジュール  
+delta_t秒後の温度Tと化学種k質量分率Y(k=1...KK)に対するヤコビアンJを計算するためのモジュール  
 SENKIN内部のモジュールを改変して作成．  
 ## 実行環境
 - ubuntu
